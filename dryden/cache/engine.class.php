@@ -27,12 +27,14 @@ class cache_engine {
  
     /**
      * singleton design
+     * do not allow cache to appear in any other place instead of its intended use (in $_SESSION)
      */
     private function __construct() {
     }
     
     /**
      * ensure cache is ready to use by zpanel
+     * @return void
      */
     public static function initializeCache() {
         global $yCache;
@@ -49,7 +51,6 @@ class cache_engine {
     
     /**
      * Returns a reference to the dataset belonging to the current user
-     * @author Kenneth Chow
      * @param int $zpuid The ZPanel user account ID to set the session as.
      * @return void
      */
@@ -66,11 +67,11 @@ class cache_engine {
     }
  
     /**
-     * Stores function results in session cache 
-     * @author Kenneth Chow
+     * Stores function/method result in session cache 
      * @param mixed $value The value to store in cache.
-     * @param string $variation The
+     * @param string $variation Cache this function according to its parameters
      * @param int|bool|null $expire Number of seconds before this value in cache expires. Use true for default time, false for no expiry, or null to keep existing expiry time (if rewriting value)
+     * @param string $functionName The function name that will serve as the identification of this cached value, defaults to magic constant function name
      * @return void
      */
     public function cacheResult($value = '', $variation = '', $expire = true, $functionName = __METHOD__) {
@@ -85,11 +86,12 @@ class cache_engine {
     }
     
     /**
-     * Retrieve data in cache
+     * Retrieve data in cache for the function/method
      * @author Kenneth Chow
-     * @param int $key The key that is paired up with the value in cache
+     * @param string $variation Retrieve the function result according to its original parameters
      * @param bool $ignoryExpiry Retrieve the value even if it has expired already
-     * @return mixed
+     * @param string $functionName The function name that will serve as the identification of this cached value, defaults to magic constant function name
+     * @return mixed The cached result
      */
     public function retrieveResult($variation = '', $ignoreExpiry = false, functionName = __METHOD__) {
         $cache = &$this->pointToUserIdDataSet();

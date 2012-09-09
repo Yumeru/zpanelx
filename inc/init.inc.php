@@ -101,12 +101,11 @@ if (!isset($_SESSION['zpuid'])) {
     ctrl_auth::RequireUser();
 }
 
+// starts the cache engine
 cache_engine::initializeCache();
 $yCache = $_SESSION['zpanel_ycache'];
 
 runtime_hook::Execute('OnBeforeControllerInit');
 $controller->Init();
 ui_templateparser::Generate("etc/styles/" . ui_template::GetUserTemplate());
-
-print_r($_SESSION);
 ?>

@@ -44,7 +44,6 @@ final class cache_valuepair {
 
     /**
      * Default constructor for the valuepair
-     * @author Kenneth Chow
      * @param int $value The value to store for caching.
      * @param mixed $expire Optional, expire this cache after number of seconds, use default if true/null, or no expiry for false
      */
@@ -72,7 +71,6 @@ final class cache_valuepair {
     
     /**
      * Retrieves value regardless of expiry
-     * @author Kenneth Chow
      * @return mixed The value to retrieve.
      */
     public function getEvenIfExpired()
@@ -82,7 +80,6 @@ final class cache_valuepair {
     
     /**
      * Updates the value, and give it a new timestamp, and new expiry time span if desired
-     * @author Kenneth Chow
      * @param int $value The value to store for caching.
      * @param mixed $expire Optional, expire this cache after number of seconds, use default if true, keep existing expiry amount if null, or no expiry for false
      */
@@ -105,7 +102,6 @@ final class cache_valuepair {
 
     /**
      * Checks if the value has expired already
-     * @author Kenneth Chow
      * @param bool If expired then true will be returned, otherwise false will be returned instead
      */
     public function hasExpired()
