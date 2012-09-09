@@ -10,7 +10,7 @@
  * @link http://www.zpanelcp.com/
  * @license GPL (http://www.gnu.org/licenses/gpl.html)
  */
-class final cache_valuepair {
+final class cache_valuepair {
 
     /**
      * Constant in seconds to store default expiry time, default is 5 minutes
@@ -51,7 +51,7 @@ class final cache_valuepair {
     public function __construct($value, $expire = true)
     {	
         // at this time, there are no existing value so case <true> is the same as case <null>
-        if (!$isset($expire))
+        if (!isset($expire))
             $expire = true;
 
         $this->set($value, $expire);
@@ -108,7 +108,7 @@ class final cache_valuepair {
      * @author Kenneth Chow
      * @param bool If expired then true will be returned, otherwise false will be returned instead
      */
-    private function hasExpired()
+    public function hasExpired()
     {
         if (time() < $this->timestamp + $this->expire && !$this->no_expiry)
             return true;

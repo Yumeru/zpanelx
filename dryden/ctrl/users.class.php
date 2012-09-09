@@ -20,18 +20,24 @@ class ctrl_users {
      * @return array
      */
     static function GetUserDetail($uid = "") {
-        global $zdbh;
-        $userdetail = new runtime_dataobject();
+        global $zdbh, $yCache;
         if ($uid == "") {
             $uid = ctrl_auth::CurrentUserID();
         }
+        
+        $cachedResult = $yCache->retrieveResult();
+        if (isset($cachedResult))
+            return $cachedResult;
+        
+        $userdetail = new runtime_dataobject();
+
         $rows = $zdbh->prepare("
             SELECT * FROM x_accounts 
             LEFT JOIN x_profiles ON (x_accounts.ac_id_pk=x_profiles.ud_user_fk) 
             LEFT JOIN x_groups   ON (x_accounts.ac_group_fk=x_groups.ug_id_pk) 
             LEFT JOIN x_packages ON (x_accounts.ac_package_fk=x_packages.pk_id_pk) 
             LEFT JOIN x_quotas   ON (x_accounts.ac_package_fk=x_quotas.qt_package_fk) 
-            WHERE x_accounts.ac_id_pk= " . $uid . "
+            WHERE x_accounts.ac_id_pk= " . $uid . " LIMIT 1
           ");
         $rows->execute();
         $dbvals = $rows->fetch();
@@ -63,7 +69,10 @@ class ctrl_users {
         $userdetail->addItemValue('mailboxquota', $dbvals['qt_mailboxes_in']);
         $userdetail->addItemValue('forwardersquota', $dbvals['qt_fowarders_in']);
         $userdetail->addItemValue('distrobutionlistsquota', $dbvals['qt_distlists_in']);
-        return $userdetail->getDataObject();
+        
+        $returnArray = $userdetail->getDataObject();
+        $yCache->cacheResult($returnArray);
+        return $returnArray;
     }
 
     /**
@@ -74,7 +83,14 @@ class ctrl_users {
      * @return array Database table array of the quota infomation. 
      */
     static function GetQuotaUsages($resource, $acc_key = 0) {
-        global $zdbh;
+        global $zdbh, $yCache;
+        
+        $variation = $resource . $acc_key;
+        
+        $cachedResult = $yCache->retrieveResult($variation);
+        if (isset($cachedResult))
+            return $cachedResult;
+        
         if ($resource == 'domains') {
             $sql = $zdbh->query("SELECT COUNT(*) AS amount FROM x_vhosts WHERE vh_acc_fk=" . $acc_key . " AND vh_type_in=1 AND vh_deleted_ts IS NULL");
             $sql->execute();
@@ -135,6 +151,8 @@ class ctrl_users {
             $retval = $sql->fetch();
             $retval = $retval['bd_transamount_bi'];
         }
+        
+        $yCache->cacheResult($retval, $variation);
         return $retval;
     }
 

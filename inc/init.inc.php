@@ -9,7 +9,7 @@
  * @link http://www.zpanelcp.com/
  * @license GPL (http://www.gnu.org/licenses/gpl.html)
  */
-global $controller, $zdbh, $zlo;
+global $controller, $zdbh, $zlo, $yCache;
 $controller = new runtime_controller();
 
 $zlo->method = ctrl_options::GetSystemOption('logmode');
@@ -101,8 +101,12 @@ if (!isset($_SESSION['zpuid'])) {
     ctrl_auth::RequireUser();
 }
 
+cache_engine::initializeCache();
+$yCache = $_SESSION['zpanel_ycache'];
 
 runtime_hook::Execute('OnBeforeControllerInit');
 $controller->Init();
 ui_templateparser::Generate("etc/styles/" . ui_template::GetUserTemplate());
+
+print_r($_SESSION);
 ?>
